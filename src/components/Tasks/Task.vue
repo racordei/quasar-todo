@@ -26,7 +26,7 @@
         <div class="column justify-center">
           <q-item-label caption>{{ task.dueDate | niceDate }}</q-item-label>
           <q-item-label v-if="task.dueTime" class="row justify-end" caption>
-            <small>{{ task.dueTime }}</small>
+            <small>{{ taskDueTime }}</small>
           </q-item-label>
         </div>
       </div>
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import EditTask from './Modals/EditTask.vue'
 import { date } from 'quasar'
 
@@ -75,6 +75,14 @@ export default {
   },
   computed: {
     ...mapState('tasks', ['search']),
+    ...mapGetters('settings', ['settings']),
+    taskDueTime() {
+      if (this.settings.show12HourTimeFormat) {
+        return formatDate(
+          `${this.task.dueDate} ${this.task.dueTime}`, 'hh:mm A')
+      }
+      return this.task.dueTime
+    }
   },
   methods: {
     ...mapActions('tasks', ['updateTask', 'deleteTask']),
@@ -88,12 +96,12 @@ export default {
         })
         .onOk(() => {
           this.deleteTask(id)
-          this.$q.notify({
-            color: 'red-4',
-            textColor: 'white',
-            icon: 'delete',
-            message: 'Deleted',
-          })
+          // this.$q.notify({
+          //   color: 'red-4',
+          //   textColor: 'white',
+          //   icon: 'delete',
+          //   message: 'Deleted',
+          // })
         })
     },
   },

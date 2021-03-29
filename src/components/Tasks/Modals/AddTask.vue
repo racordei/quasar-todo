@@ -36,11 +36,11 @@ export default {
   },
   mixins: [handleTask],
   methods: {
-    ...mapActions('tasks', ['addTask']),
     submitTask() {
       this.addTask(this.taskToSubmit)
       this.$emit('close')
     },
+    ...mapActions('tasks', ['addTask']),
   },
 }
 </script>

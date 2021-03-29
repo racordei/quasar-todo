@@ -1,31 +1,55 @@
 <template>
-  <q-page class="q-pa-md">
-    <div v-if="!isEmptyTasks" class="row q-mb-lg">
-      <Search class="col q-mb-sm q-mr-sm" />
-      <Sort class="col-3"/>
-    </div>
+  <q-page>
 
-    <div class="relative-position">
-      <TasksTodo v-if="Object.keys(tasksTodo).length" :tasksTodo="tasksTodo" />
+    <div
+      class="q-pa-md absolute full-width full-height column">
 
-      <NoTasks v-else-if="hint" :showButton="!search">
-        {{ search ? "No tasks found" : "No tasks to do today" }}
-      </NoTasks>
+      <template v-if="downloaded">
+        <div v-if="!isEmptyTasks" class="row q-mb-lg">
+          <Search class="col q-mb-sm q-mr-sm" />
+          <Sort class="col-3"/>
+        </div>
 
-      <TasksCompleted
-        v-if="Object.keys(tasksCompleted).length"
-        :tasksCompleted="tasksCompleted"
-      />
-    </div>
+        <q-scroll-area
+          class="col">
+          <!-- <div class="relative-position"> -->
+            <TasksTodo
+              v-if="Object.keys(tasksTodo).length"
+              :tasksTodo="tasksTodo" />
 
-    <div class="absolute-bottom text-center q-ma-lg">
-      <q-btn
-        @click="showAddTask = true"
-        round
-        color="primary"
-        size="24px"
-        icon="add"
-      />
+            <NoTasks v-else-if="hint && !settings.showTasksInOneList" :showButton="!search">
+              {{ search ? "No tasks found" : "No tasks to do today" }}
+            </NoTasks>
+
+            <TasksCompleted
+              v-if="Object.keys(tasksCompleted).length"
+              :tasksCompleted="tasksCompleted"
+            />
+          <!-- </div> -->
+        </q-scroll-area>
+
+        <div
+          class="absolute-bottom text-center q-ma-lg no-pointer-events">
+          <q-btn
+            @click="showAddTask = true"
+            round
+            color="primary"
+            size="24px"
+            icon="add"
+            class="all-pointer-events"
+          />
+        </div>
+      </template>
+
+      <template v-else>
+        <span class="absolute-center">
+          <q-spinner-hourglass
+            color="primary"
+            size="5em"
+          />
+        </span>
+      </template>
+      
     </div>
 
     <q-dialog v-model="showAddTask">
@@ -50,8 +74,9 @@ export default {
     };
   },
   computed: {
-    ...mapState("tasks", ["search"]),
+    ...mapState("tasks", ["search", "downloaded"]),
     ...mapGetters("tasks", ["tasksTodo", "tasksCompleted", "isEmptyTasks"]),
+    ...mapGetters("settings", ["settings"]),
     hint() {
       let noSearch = !this.search;
       let tasksCounter = Object.keys(this.tasksTodo).length;

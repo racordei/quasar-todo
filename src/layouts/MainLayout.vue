@@ -2,16 +2,34 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar>
-        <!-- <q-btn
+        <q-btn
           flat
           dense
           round
           icon="menu"
           aria-label="Menu"
           @click="drawer = !drawer"
-        /> -->
+        />
 
-        <q-toolbar-title class="absolute-center">Awesome Todo</q-toolbar-title>
+        <q-toolbar-title class="absolute-center">
+          Awesome Todo
+        </q-toolbar-title>
+
+        <q-btn
+          flat
+          to="/auth"
+          v-if="!loggedIn"
+          icon-right="account_circle"
+          label="Login"
+          class="absolute-right" />
+
+        <q-btn
+          flat
+          @click="logoutUser"
+          v-else
+          icon-right="account_circle"
+          label="Logout"
+          class="absolute-right" />
       </q-toolbar>
     </q-header>
 
@@ -50,6 +68,20 @@
             <q-item-label>{{ nav.label }}</q-item-label>
           </q-item-section>
         </q-item>
+
+        <q-item
+          v-if="$q.platform.is.electron"
+          @click="exitApp"
+          class="text-gray-4 absolute-bottom"
+          clickable>
+          <q-item-section avatar>
+            <q-icon name="power_settings_new" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>Exit</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -60,6 +92,8 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "MainLayout",
   data() {
@@ -78,9 +112,25 @@ export default {
           to: '/settings'
         }
       ]
-    };
+    }
   },
-};
+  computed: {
+    ...mapState('auth', ['loggedIn']),
+  },
+  methods: {
+    ...mapActions('auth', ['logoutUser']),
+    exitApp() {
+      this.$q.dialog({
+        title: 'Confirm',
+        message: 'Really exit the app?',
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        require('electron').ipcRenderer.send('exit-app')
+      })
+    }
+  },
+}
 </script>
 
 <style lang="scss">

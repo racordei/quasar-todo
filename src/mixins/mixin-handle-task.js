@@ -11,12 +11,12 @@ export default {
         this.taskToSubmit.dueTime = ''
       }
       this.submitTask()
-      this.$q.notify({
-        color: 'green-4',
-        textColor: 'white',
-        icon: 'check',
-        message: 'Submitted',
-      })
+      // this.$q.notify({
+      //   color: 'green-4',
+      //   textColor: 'white',
+      //   icon: 'check',
+      //   message: 'Submitted',
+      // })
     },
   },
   components: {
